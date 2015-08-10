@@ -23,6 +23,10 @@ Coord operator+ (Coord a, const Coord &b) {
 	return a += b;
 }
 
+ostream& operator<< (ostream& out, const Coord& c) {
+	return out << "{" << c.X << "," << c.Y << "}";
+}
+
 namespace std {
 	template<>
 	struct hash<Coord> {
@@ -92,7 +96,7 @@ int main () {
 	auto neighbours = Neighbours(start, walls);
 
 	for (int i = 0; i < neighbours.size(); ++i) {
-		cout << neighbours[i].X << "," << neighbours[i].Y << flush;
+		cout << neighbours[i] << flush;
 		this_thread::sleep_for(milliseconds(500));
 		cout << '\r';
 	}
