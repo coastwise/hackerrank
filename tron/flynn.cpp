@@ -23,15 +23,18 @@ Coord operator+ (Coord a, const Coord &b) {
 	return a += b;
 }
 
-struct CoordHash {
-	size_t operator() (const Coord &coord) const {
-		return hash<int>()(coord.X) ^ hash<int>()(coord.Y);
-	}
-};
+namespace std {
+	template<>
+	struct hash<Coord> {
+		size_t operator() (const Coord &coord) const {
+			return hash<int>()(coord.X) ^ hash<int>()(coord.Y);
+		}
+	};
+}
 
 Coord Directions [4] { {-1,0}, {0,1}, {1,0}, {0,-1} };
 
-vector<Coord> Neighbours(Coord c, unordered_set<Coord,CoordHash>& walls) {
+vector<Coord> Neighbours(Coord c, unordered_set<Coord>& walls) {
 	vector<Coord> neighbours;
 	for (int i = 0; i < 4; ++i) {
 		Coord neighbour = c + Directions[i];
@@ -74,7 +77,7 @@ int main () {
 	cin >> player;
 	cin >> x >> y >> ox >> oy;
 
-	unordered_set<Coord, CoordHash> walls;
+	unordered_set<Coord> walls;
 
 	for (int r = 0; r < 15; ++r) {
 		for (int c = 0; c < 15; ++c) {
