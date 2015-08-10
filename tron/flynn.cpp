@@ -43,15 +43,26 @@ namespace std {
 			return hash<int>()(coord.X) ^ hash<int>()(coord.Y);
 		}
 	};
+
+	// print's vector<bool> like a bitset
+	ostream& operator<< (ostream& out, const vector<bool>& bits) {
+		for (auto i = bits.crbegin(); i != bits.crend(); ++i) {
+			out << *i;
+		}
+		return out;
+	}
 }
 
 Coord Directions [4] { {-1,0}, {0,1}, {1,0}, {0,-1} };
 
-vector<Coord> Neighbours(Coord c, unordered_set<Coord>& walls) {
+typedef bitset<15*15> MapBits;
+//typedef vector<bool> MapBits;
+
+vector<Coord> Neighbours(Coord c, MapBits& empty) {
 	vector<Coord> neighbours;
 	for (int i = 0; i < 4; ++i) {
 		Coord neighbour = c + Directions[i];
-		if (walls.find(neighbour) != walls.end()) {
+		if (empty[neighbour.Index()]) {
 			neighbours.push_back(neighbour);
 		}
 	}
@@ -92,19 +103,15 @@ int main () {
 
 	Coord::MaxX = 15;
 
-	unordered_set<Coord> walls;
+	MapBits empty;
 
-	for (int r = 0; r < 15; ++r) {
-		for (int c = 0; c < 15; ++c) {
-			char space; cin >> space;
-			if (space != '-') {
-				walls.insert(Coord(r,c));
-			}
-		}
+	for (int index = 0; index < 15*15; ++index) {
+		char space; cin >> space;
+		empty[index] = (space == '-');
 	}
 
 	auto start = Coord(x,y);
-	auto neighbours = Neighbours(start, walls);
+	auto neighbours = Neighbours(start, empty);
 
 	for (int i = 0; i < neighbours.size(); ++i) {
 		cout << neighbours[i] << flush;
