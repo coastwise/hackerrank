@@ -6,7 +6,14 @@ using namespace std;
 struct Coord {
 	int X, Y;
 
+	static int MaxX;
+
 	Coord (int x, int y) : X{x}, Y{y} {}
+
+	int Index () {
+		int result = MaxX*Y + X;
+		return result;
+	}
 
 	Coord& operator+= (const Coord& a) {
 		X += a.X;
@@ -14,6 +21,8 @@ struct Coord {
 		return *this;
 	}
 };
+
+int Coord::MaxX = 0;
 
 bool operator== (const Coord& a, const Coord& b) {
 	return a.X == b.X && a.Y == b.Y;
@@ -80,6 +89,8 @@ int main () {
 
 	cin >> player;
 	cin >> x >> y >> ox >> oy;
+
+	Coord::MaxX = 15;
 
 	unordered_set<Coord> walls;
 
