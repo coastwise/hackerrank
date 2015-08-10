@@ -42,6 +42,25 @@ vector<Coord> Neighbours(Coord c, unordered_set<Coord,CoordHash>& walls) {
 	return neighbours;
 }
 
+#include <sstream>
+// VT100 terminal control escape sequences
+string CursorUp (int numLines) {
+	stringstream out;
+	out << "\x1b[" << numLines << "A";
+	out << '\r'; // carriage return
+	return out.str();
+}
+
+string CursorDown (int numLines) {
+	stringstream out;
+	out << "\x1b[" << numLines << "B";
+	out << '\r'; // carriage return
+	return out.str();
+}
+
+const string CursorUp15 = "\x1b[15A\r";
+const string CursorDown15 = "\x1b[15B\r";
+
 int main () {
 	char player;
 	int x, y, ox, oy;
