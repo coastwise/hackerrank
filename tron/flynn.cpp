@@ -58,8 +58,14 @@ string CursorDown (int numLines) {
 	return out.str();
 }
 
+const string CursorUp1 = "\x1b[A\r";
+const string CursorDown1 = "\x1b[B\r";
 const string CursorUp15 = "\x1b[15A\r";
 const string CursorDown15 = "\x1b[15B\r";
+
+#include <thread>
+#include <chrono>
+using namespace std::chrono;
 
 int main () {
 	char player;
@@ -83,7 +89,9 @@ int main () {
 	auto neighbours = Neighbours(start, walls);
 
 	for (int i = 0; i < neighbours.size(); ++i) {
-		cout << neighbours[i].X << "," << neighbours[i].Y << "\n";
+		cout << neighbours[i].X << "," << neighbours[i].Y << flush;
+		this_thread::sleep_for(milliseconds(500));
+		cout << '\r';
 	}
 
 	return 0;
