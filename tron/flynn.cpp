@@ -99,7 +99,7 @@ int main () {
 	int x, y, ox, oy;
 
 	cin >> player;
-	cin >> x >> y >> ox >> oy;
+	cin >> y >> x >> oy >> ox;
 
 	Coord::MaxX = 15;
 
