@@ -76,6 +76,9 @@ vector<Coord> Neighbours(Coord c, MapBits& empty) {
 
 pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits& empty) {
 
+	MapBits a_fill;
+	MapBits b_fill;
+
 	auto frontier = queue<pair<Coord,bool>>();
 	{
 		auto as = Neighbours(A,empty);
@@ -88,25 +91,27 @@ pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits& empty) {
 		}
 	}
 
-	int a_score = 0;
-	int b_score = 0;
-
 	while (!frontier.empty()) {
 		auto current = frontier.front();
 		frontier.pop();
 		Coord coord = current.first;
-		bool a = current.second;
-		empty[coord.Index()] = false;
-		if (a) a_score++;
-		else b_score++;
+		if (!current.second) {
+			a_fill[coord.Index()] = true;
+			empty[coord.Index()] = false;
+		} else {
+			b_fill[coord.Index()] = true;
+			empty[coord.Index()] = false;
+		}
 
-		auto next = Neighbours(coord,empty);
+		auto next = Neighbours(coord, empty);
 		for (auto i = next.begin(); i != next.end(); ++i) {
-			frontier.push(make_pair(move(*i),a));
+			frontier.push(make_pair(move(*i),current.second));
 		}
 	}
 
-	return make_pair(a_score,b_score);
+	empty = a_fill | b_fill; // unecessary if we pass in empty by value
+
+	return make_pair(a_fill.count(), b_fill.count());
 }
 
 #include <sstream>
