@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <unordered_set>
+#include <queue>
 using namespace std;
 
 struct Coord {
@@ -51,6 +51,10 @@ namespace std {
 		}
 		return out;
 	}
+
+	ostream& operator<< (ostream& out, const pair<int,int>& p) {
+		return out << "<" << p.first << "," << p.second << ">";
+	}
 }
 
 Coord Directions [4] { {-1,0}, {0,1}, {1,0}, {0,-1} };
@@ -67,6 +71,42 @@ vector<Coord> Neighbours(Coord c, MapBits& empty) {
 		}
 	}
 	return neighbours;
+}
+
+
+pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits& empty) {
+
+	auto frontier = queue<pair<Coord,bool>>();
+	{
+		auto as = Neighbours(A,empty);
+		for (auto i = as.begin(); i != as.end(); ++i) {
+			frontier.push(make_pair(move(*i),false));
+		}
+		auto bs = Neighbours(B,empty);
+		for (auto i = bs.begin(); i != bs.end(); ++i) {
+			frontier.push(make_pair(move(*i),true));
+		}
+	}
+
+	int a_score = 0;
+	int b_score = 0;
+
+	while (!frontier.empty()) {
+		auto current = frontier.front();
+		frontier.pop();
+		Coord coord = current.first;
+		bool a = current.second;
+		empty[coord.Index()] = false;
+		if (a) a_score++;
+		else b_score++;
+
+		auto next = Neighbours(coord,empty);
+		for (auto i = next.begin(); i != next.end(); ++i) {
+			frontier.push(make_pair(move(*i),a));
+		}
+	}
+
+	return make_pair(a_score,b_score);
 }
 
 #include <sstream>
@@ -120,6 +160,12 @@ int main () {
 	}
 
 	print_map(empty);
+
+	auto scores = DualFloodFill(Coord(x,y), Coord(ox,oy), empty);
+
+	print_map(empty);
+
+	cout << scores << endl;
 
 	return 0;
 }
