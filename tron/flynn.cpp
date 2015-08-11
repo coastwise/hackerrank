@@ -90,6 +90,15 @@ const string CursorDown1 = "\x1b[B\r";
 const string CursorUp15 = "\x1b[15A\r";
 const string CursorDown15 = "\x1b[15B\r";
 
+void print_map (MapBits& empty) {
+	for (int index = 0; index < empty.size(); ++index) {
+		cout << (empty[index] ? ' ' : '#');
+		if ((index+1) % Coord::MaxX == 0) {
+			cout << endl;
+		}
+	}
+}
+
 #include <thread>
 #include <chrono>
 using namespace std::chrono;
@@ -110,14 +119,7 @@ int main () {
 		empty[index] = (space == '-');
 	}
 
-	auto start = Coord(x,y);
-	auto neighbours = Neighbours(start, empty);
-
-	for (int i = 0; i < neighbours.size(); ++i) {
-		cout << neighbours[i] << flush;
-		this_thread::sleep_for(milliseconds(500));
-		cout << '\r';
-	}
+	print_map(empty);
 
 	return 0;
 }
