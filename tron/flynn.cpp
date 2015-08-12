@@ -23,6 +23,7 @@ struct Coord {
 };
 
 int Coord::MaxX = 0;
+const Coord NullCoord = Coord(-1,-1);
 
 bool operator== (const Coord& a, const Coord& b) {
 	return a.X == b.X && a.Y == b.Y;
@@ -148,6 +149,102 @@ void print_map (MapBits& empty) {
 #include <chrono>
 using namespace std::chrono;
 
+
+const int Win = 2;
+const int Loss = 0;
+const int Tie = 1;
+
+#include <limits>
+
+int MinValue (MapBits& empty, Coord us, Coord them);
+
+Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
+	auto actions = Neighbours(us, empty);
+	if (actions.empty()) {
+		// game over. did we loose, or tie?
+		actions = Neighbours(them, empty);
+		if (actions.empty()) {
+			return NullCoord;
+		} else {
+			return NullCoord;
+		}
+	}
+
+	int bestValue = numeric_limits<int>::min();
+	Coord bestAction = NullCoord;
+	for (auto action = actions.begin(); action != actions.end(); ++action) {
+		empty[action->Index()] = false; // apply action
+
+		int value = MinValue(empty, *action, them);
+		if (value > bestValue) {
+			bestValue = value;
+			bestAction = *action;
+		}
+
+		empty[action->Index()] = true; // undo action
+	}
+
+	return bestAction;
+}
+
+int MaxValue (MapBits& empty, Coord us, Coord them) {
+	auto actions = Neighbours(us, empty);
+	if (actions.empty()) {
+		// game over. did we loose, or tie?
+		actions = Neighbours(them, empty);
+		if (actions.empty()) {
+			return Tie;
+		} else {
+			return Loss;
+		}
+	}
+
+	int bestValue = numeric_limits<int>::min();
+	for (auto action = actions.begin(); action != actions.end(); ++action) {
+		empty[action->Index()] = false; // apply action
+
+		cout << CursorUp15;
+		print_map(empty);
+
+		int value = MinValue(empty, *action, them);
+		if (value > bestValue) {
+			bestValue = value;
+		}
+
+		empty[action->Index()] = true; // undo action
+	}
+
+	return bestValue;
+}
+
+int MinValue (MapBits& empty, Coord us, Coord them) {
+	auto actions = Neighbours(them, empty);
+	if (actions.empty()) {
+		// game over. since we go at the same time, and we evaluate our moves first
+		// if they don't have any moves, we've won
+		return Win;
+	}
+
+	int bestValue = numeric_limits<int>::max();
+	for (auto action = actions.begin(); action != actions.end(); ++action) {
+		empty[action->Index()] = false; // apply action
+
+		cout << CursorUp15;
+		print_map(empty);
+
+		int value = MaxValue(empty, us, *action);
+
+		if (value < bestValue) {
+			bestValue = value;
+		}
+
+		empty[action->Index()] = true; // undo action
+	}
+
+	return bestValue;
+}
+
+
 int main () {
 	char player;
 	int x, y, ox, oy;
@@ -166,11 +263,12 @@ int main () {
 
 	print_map(empty);
 
-	auto scores = DualFloodFill(Coord(x,y), Coord(ox,oy), empty);
+	Coord us = Coord(x,y);
+	Coord them = Coord(ox,oy);
 
-	print_map(empty);
+	Coord bestMove = MiniMaxDecision(empty, us, them);
 
-	cout << scores << endl;
+	cout << "our best move: " << bestMove << endl;
 
 	return 0;
 }
