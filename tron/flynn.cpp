@@ -75,7 +75,7 @@ vector<Coord> Neighbours(Coord c, MapBits& empty) {
 }
 
 
-pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits& empty) {
+pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits empty) {
 
 	MapBits a_fill;
 	MapBits b_fill;
@@ -109,8 +109,6 @@ pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits& empty) {
 			frontier.push(make_pair(move(*i),current.second));
 		}
 	}
-
-	empty = a_fill | b_fill; // unecessary if we pass in empty by value
 
 	return make_pair(a_fill.count(), b_fill.count());
 }
