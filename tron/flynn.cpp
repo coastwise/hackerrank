@@ -156,6 +156,7 @@ const int Tie = 1;
 
 #include <limits>
 
+#define PRINT 0
 int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta);
 
 Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
@@ -207,8 +208,10 @@ int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
 		empty[action->Index()] = false; // apply action
 
+#if PRINT
 		cout << CursorUp15;
 		print_map(empty);
+#endif
 
 		int value = MinValue(empty, *action, them, alpha, beta);
 
@@ -241,8 +244,10 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
 		empty[action->Index()] = false; // apply action
 
+#if PRINT
 		cout << CursorUp15;
 		print_map(empty);
+#endif
 
 		int value = MaxValue(empty, us, *action, alpha, beta);
 
