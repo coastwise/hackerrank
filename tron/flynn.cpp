@@ -156,7 +156,7 @@ const int Tie = 1;
 
 #include <limits>
 
-int MinValue (MapBits& empty, Coord us, Coord them);
+int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta);
 
 Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
 	auto actions = Neighbours(us, empty);
@@ -170,16 +170,20 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
 		}
 	}
 
+	int alpha = numeric_limits<int>::min();
+
 	int bestValue = numeric_limits<int>::min();
 	Coord bestAction = NullCoord;
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
 		empty[action->Index()] = false; // apply action
 
-		int value = MinValue(empty, *action, them);
+		int value = MinValue(empty, *action, them, alpha, numeric_limits<int>::max());
 		if (value > bestValue) {
 			bestValue = value;
 			bestAction = *action;
 		}
+
+		alpha = max(alpha, value);
 
 		empty[action->Index()] = true; // undo action
 	}
@@ -187,7 +191,7 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
 	return bestAction;
 }
 
-int MaxValue (MapBits& empty, Coord us, Coord them) {
+int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 	auto actions = Neighbours(us, empty);
 	if (actions.empty()) {
 		// game over. did we loose, or tie?
@@ -206,10 +210,18 @@ int MaxValue (MapBits& empty, Coord us, Coord them) {
 		cout << CursorUp15;
 		print_map(empty);
 
-		int value = MinValue(empty, *action, them);
+		int value = MinValue(empty, *action, them, alpha, beta);
+
+		if (value >= beta) {
+			empty[action->Index()] = true; // undo action
+			return value;
+		}
+
 		if (value > bestValue) {
 			bestValue = value;
 		}
+
+		alpha = max(alpha, value);
 
 		empty[action->Index()] = true; // undo action
 	}
@@ -217,7 +229,7 @@ int MaxValue (MapBits& empty, Coord us, Coord them) {
 	return bestValue;
 }
 
-int MinValue (MapBits& empty, Coord us, Coord them) {
+int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 	auto actions = Neighbours(them, empty);
 	if (actions.empty()) {
 		// game over. since we go at the same time, and we evaluate our moves first
@@ -232,11 +244,18 @@ int MinValue (MapBits& empty, Coord us, Coord them) {
 		cout << CursorUp15;
 		print_map(empty);
 
-		int value = MaxValue(empty, us, *action);
+		int value = MaxValue(empty, us, *action, alpha, beta);
+
+		if (value <= alpha) {
+			empty[action->Index()] = true; // undo action
+			return value;
+		}
 
 		if (value < bestValue) {
 			bestValue = value;
 		}
+
+		beta = min(beta, value);
 
 		empty[action->Index()] = true; // undo action
 	}
