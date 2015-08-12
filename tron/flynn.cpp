@@ -155,9 +155,10 @@ const int Tie = 1;
 #include <limits>
 
 #define PRINT 0
-int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta);
 
-Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
+int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int maxPlies);
+
+Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them, int maxPlies = numeric_limits<int>::max()) {
 	auto actions = Neighbours(us, empty);
 	if (actions.empty()) {
 		// game over. did we loose, or tie?
@@ -176,7 +177,7 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
 		empty[action->Index()] = false; // apply action
 
-		int value = MinValue(empty, *action, them, alpha, numeric_limits<int>::max());
+		int value = MinValue(empty, *action, them, alpha, numeric_limits<int>::max(), maxPlies-1);
 		if (value > bestValue) {
 			bestValue = value;
 			bestAction = *action;
@@ -190,13 +191,24 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them) {
 	return bestAction;
 }
 
-int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
+int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int maxPlies) {
 	auto actions = Neighbours(us, empty);
 	if (actions.empty()) {
 		// game over. did we loose, or tie?
 		actions = Neighbours(them, empty);
 		if (actions.empty()) {
 			return Tie;
+		} else {
+			return Loss;
+		}
+	}
+
+	if (maxPlies == 0) {
+		auto score = DualFloodFill(us, them, empty);
+		if (score.first == score.second) {
+			return Tie;
+		} else if (score.first > score.second) {
+			return Win;
 		} else {
 			return Loss;
 		}
@@ -211,7 +223,7 @@ int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 		print_map(empty);
 #endif
 
-		int value = MinValue(empty, *action, them, alpha, beta);
+		int value = MinValue(empty, *action, them, alpha, beta, maxPlies-1);
 
 		if (value >= beta) {
 			empty[action->Index()] = true; // undo action
@@ -230,12 +242,23 @@ int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 	return bestValue;
 }
 
-int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
+int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int maxPlies) {
 	auto actions = Neighbours(them, empty);
 	if (actions.empty()) {
 		// game over. since we go at the same time, and we evaluate our moves first
 		// if they don't have any moves, we've won
 		return Win;
+	}
+
+	if (maxPlies == 0) {
+		auto score = DualFloodFill(us, them, empty);
+		if (score.first == score.second) {
+			return Tie;
+		} else if (score.first > score.second) {
+			return Win;
+		} else {
+			return Loss;
+		}
 	}
 
 	int bestValue = numeric_limits<int>::max();
@@ -247,7 +270,7 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 		print_map(empty);
 #endif
 
-		int value = MaxValue(empty, us, *action, alpha, beta);
+		int value = MaxValue(empty, us, *action, alpha, beta, maxPlies-1);
 
 		if (value <= alpha) {
 			empty[action->Index()] = true; // undo action
@@ -268,6 +291,8 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta) {
 
 
 int main () {
+	auto t0 = high_resolution_clock::now();
+
 	char player;
 	int x, y, ox, oy;
 
@@ -288,9 +313,23 @@ int main () {
 	Coord us = Coord(x,y);
 	Coord them = Coord(ox,oy);
 
-	Coord bestMove = MiniMaxDecision(empty, us, them);
+	Coord bestMove = NullCoord;
+	int depth = 2;
+
+	auto t1 = high_resolution_clock::now();
+	auto elapsed = duration_cast<milliseconds>(t1-t0).count();
+	while (elapsed < 800) {
+		t0 = t1;
+		bestMove = MiniMaxDecision(empty, us, them, depth);
+		depth += 2;
+
+		t1 = high_resolution_clock::now();
+		auto plyDuration = duration_cast<milliseconds>(t1-t0).count();
+		elapsed += plyDuration;
+	}
 
 	cout << "our best move: " << bestMove << endl;
+	cout << "finished after " << elapsed << " seconds and " << depth << " plies" << endl;
 
 	return 0;
 }
