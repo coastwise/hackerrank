@@ -12,8 +12,10 @@ class Node {
 	typedef typename GameState::player_type player_t;
 	typedef typename GameState::action_type action_t;
 
+	typedef Node<GameState>* NodePtr;
+
 private:
-	Node* parent;
+	NodePtr parent;
 
 	player_t player;
 	action_t action;
@@ -25,7 +27,7 @@ private:
 	std::vector<action_t> untriedActions;
 
 public:
-	Node (Node* parent, action_t action, std::vector<action_t> untriedActions) : 
+	Node (NodePtr parent, action_t action, std::vector<action_t> untriedActions) : 
 		parent{parent},
 		action{action},
 		untriedActions{untriedActions}
@@ -52,7 +54,7 @@ public:
 		return sumValue / visitCount;
 	}
 
-	Node<GameState>* SelectChild () {
+	NodePtr SelectChild () {
 		// TODO: actually use UCB
 		return &*children.begin();
 	}
@@ -69,7 +71,7 @@ public:
 		return action;
 	}
 
-	Node<GameState>* AddChild(action_t action, std::vector<action_t> nextActions) {
+	NodePtr AddChild(action_t action, std::vector<action_t> nextActions) {
 		children.emplace_back(this, action, move(nextActions));
 		return &children.back();
 	}
