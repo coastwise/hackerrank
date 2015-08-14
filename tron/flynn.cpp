@@ -3,27 +3,7 @@
 #include <queue>
 using namespace std;
 
-struct Coord {
-	int X, Y;
-
-	static int MaxX;
-
-	Coord (int x, int y) : X{x}, Y{y} {}
-
-	int Index () {
-		int result = MaxX*Y + X;
-		return result;
-	}
-
-	Coord& operator+= (const Coord& a) {
-		X += a.X;
-		Y += a.Y;
-		return *this;
-	}
-};
-
-int Coord::MaxX = 0;
-const Coord NullCoord = Coord(-1,-1);
+#include "tron.hpp"
 
 bool operator== (const Coord& a, const Coord& b) {
 	return a.X == b.X && a.Y == b.Y;
@@ -164,16 +144,16 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them, int maxPlies = numer
 		// game over. did we loose, or tie?
 		actions = Neighbours(them, empty);
 		if (actions.empty()) {
-			return NullCoord;
+			return Coord::Invalid;
 		} else {
-			return NullCoord;
+			return Coord::Invalid;
 		}
 	}
 
 	int alpha = numeric_limits<int>::min();
 
 	int bestValue = numeric_limits<int>::min();
-	Coord bestAction = NullCoord;
+	Coord bestAction = Coord::Invalid;
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
 		empty[action->Index()] = false; // apply action
 
@@ -313,7 +293,7 @@ int main () {
 	Coord us = Coord(x,y);
 	Coord them = Coord(ox,oy);
 
-	Coord bestMove = NullCoord;
+	Coord bestMove = Coord::Invalid;
 	int depth = 2;
 
 	auto t1 = high_resolution_clock::now();
