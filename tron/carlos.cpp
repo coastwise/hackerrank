@@ -1,5 +1,6 @@
 #include <vector>
 #include <algorithm> // random_shuffle
+#include <cmath>     // sqrt & log
 
 namespace MCTS {
 
@@ -57,9 +58,18 @@ public:
 		return sumValue / visitCount;
 	}
 
-	NodePtr SelectChild () {
-		// TODO: actually use UCB
-		return &*children.begin();
+	NodePtr SelectChild (float C = 1) {
+		NodePtr bestChild = nullptr;
+		float bestValue = 0;
+		for (auto child : children) {
+			// NOTE: UCB1
+			float value = child.EstimatedValue() + C * sqrt(2 * log(visitCount) / child.visitCount);
+			if (value > bestValue) {
+				bestValue = value;
+				bestChild = &child;
+			}
+		}
+		return bestChild;
 	}
 
 	bool IsFullyExpanded () {
