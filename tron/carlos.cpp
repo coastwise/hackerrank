@@ -22,7 +22,8 @@ private:
 	std::vector<Node> children;
 
 public:
-
+	Node (action_t action, Node* parent) : action{action}, parent{parent} {}
+	
 	action_t BestMove () {
 		action_t bestMove;
 		int mostVisits = 0;
@@ -62,7 +63,8 @@ public:
 	}
 
 	Node<GameState>* AddChild(action_t action) {
-		return nullptr;
+		children.emplace_back(action, this);
+		return &children.back();
 	}
 
 };
@@ -73,11 +75,11 @@ class Tree {
 	typedef Node<GameState>* NodePtr;
 
 private:
-	Node<GameState> root;
 	GameState gameState;
+	Node<GameState> root;
 public:
 
-	explicit Tree (GameState game) : gameState{game} {}
+	explicit Tree (GameState game) : gameState{game}, root{0,nullptr} {}
 
 	void Update () {
 
