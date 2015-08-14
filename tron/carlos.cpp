@@ -22,12 +22,15 @@ private:
 
 	std::vector<Node> children;
 
-public:
-	Node (Node* parent, action_t action) :
-		parent{parent},
-		action{action}
-	{}
+	std::vector<action_t> untriedActions;
 
+public:
+	Node (Node* parent, action_t action, std::vector<action_t> untriedActions) : 
+		parent{parent},
+		action{action},
+		untriedActions{untriedActions}
+	{}
+	
 	action_t BestMove () {
 		action_t bestMove;
 		int mostVisits = 0;
@@ -66,8 +69,8 @@ public:
 		return action;
 	}
 
-	Node<GameState>* AddChild(action_t action) {
-		children.emplace_back(this, action);
+	Node<GameState>* AddChild(action_t action, std::vector<action_t> nextActions) {
+		children.emplace_back(this, action, move(nextActions));
 		return &children.back();
 	}
 
@@ -83,7 +86,7 @@ private:
 	Node<GameState> root;
 public:
 
-	explicit Tree (GameState game) : gameState{game}, root{nullptr,0} {}
+	explicit Tree (GameState game) : gameState{game}, root{nullptr,0,game.NextActions()} {}
 
 	void Update () {
 
@@ -98,9 +101,9 @@ public:
 
 		// expansion
 		if (!currentNode->IsFullyExpanded()) {
-			action_t nextAction = currentNode->RandomUntriedAction();
-			currentNode = currentNode->AddChild(nextAction);
-			currentState.DoAction(nextAction);
+			action_t action = currentNode->RandomUntriedAction();
+			currentState.DoAction(action);
+			currentNode = currentNode->AddChild(action, move(currentState.NextActions()));
 		}
 
 		// simulation
@@ -139,6 +142,12 @@ public:
 	using score_type = int;
 	using player_type = int;
 	using action_type = int;
+
+	std::vector<action_type> NextActions () {
+		std::vector<action_type> actions;
+		// TODO: actually generate possible actions
+		return actions;
+	}
 
 	void DoAction(int a) {
 
