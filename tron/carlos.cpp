@@ -13,17 +13,21 @@ class Node {
 	typedef typename GameState::action_type action_t;
 
 private:
+	Node* parent;
+
 	player_t player;
 	action_t action;
 	int visitCount;
 	float sumValue; // TODO: refactor to score_t
 
-	Node* parent;
 	std::vector<Node> children;
 
 public:
-	Node (action_t action, Node* parent) : action{action}, parent{parent} {}
-	
+	Node (Node* parent, action_t action) :
+		parent{parent},
+		action{action}
+	{}
+
 	action_t BestMove () {
 		action_t bestMove;
 		int mostVisits = 0;
@@ -63,7 +67,7 @@ public:
 	}
 
 	Node<GameState>* AddChild(action_t action) {
-		children.emplace_back(action, this);
+		children.emplace_back(this, action);
 		return &children.back();
 	}
 
@@ -79,7 +83,7 @@ private:
 	Node<GameState> root;
 public:
 
-	explicit Tree (GameState game) : gameState{game}, root{0,nullptr} {}
+	explicit Tree (GameState game) : gameState{game}, root{nullptr,0} {}
 
 	void Update () {
 
