@@ -84,8 +84,8 @@ class Tree {
 private:
 	GameState gameState;
 	Node<GameState> root;
-public:
 
+public:
 	explicit Tree (GameState game) : gameState{game}, root{nullptr,0,game.NextActions()} {}
 
 	void Update () {
