@@ -63,11 +63,13 @@ public:
 	}
 
 	bool IsFullyExpanded () {
-		return false;
+		int numActions = untriedActions.size();
+		return numActions == 0;
 	}
 
 	bool IsTerminal () {
-		return true;
+		int numChildren = children.size();
+		return numChildren == 0;
 	}
 
 	action_t RandomUntriedAction () {
