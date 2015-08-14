@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm> // random_shuffle
 
 namespace MCTS {
 
@@ -31,8 +32,10 @@ public:
 		parent{parent},
 		action{action},
 		untriedActions{untriedActions}
-	{}
-	
+	{
+		std::random_shuffle(untriedActions.begin(), untriedActions.end());
+	}
+
 	action_t BestMove () {
 		action_t bestMove;
 		int mostVisits = 0;
@@ -68,6 +71,9 @@ public:
 	}
 
 	action_t RandomUntriedAction () {
+		// NOTE: untriedActions is shuffled in constructor
+		auto action = untriedActions.back();
+		untriedActions.pop_back();
 		return action;
 	}
 
