@@ -38,7 +38,6 @@ namespace std {
 	}
 }
 
-Coord Directions [4] { {-1,0}, {0,1}, {1,0}, {0,-1} };
 
 typedef bitset<15*15> MapBits;
 //typedef vector<bool> MapBits;
@@ -46,7 +45,7 @@ typedef bitset<15*15> MapBits;
 vector<Coord> Neighbours(Coord c, MapBits& empty) {
 	vector<Coord> neighbours;
 	for (int i = 0; i < 4; ++i) {
-		Coord neighbour = c + Directions[i];
+		Coord neighbour = c + Coord::Directions[i];
 		if (empty[neighbour.Index()]) {
 			neighbours.push_back(neighbour);
 		}

@@ -17,6 +17,7 @@ struct Coord {
 	}
 
 	static const Coord Invalid;
+	static const Coord Directions [4];
 
 };
 
