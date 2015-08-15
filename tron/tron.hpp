@@ -35,25 +35,43 @@ std::ostream& operator<< (std::ostream&, const Coord&);
 std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty);
 
 class TronState {
-	std::bitset<15*15> bits;
+	
+	std::bitset<15*15> empty;
+	Coord us;
+	Coord them;
+
+	bool ourTurn;
 
 public:
 	using score_type = int;
-	using player_type = int;
-	using action_type = int;
+	using player_type = bool;
+	using action_type = Coord;
 
 	std::vector<action_type> NextActions () {
 		std::vector<action_type> actions;
-		// TODO: actually generate possible actions
+		if (ourTurn) {
+			actions = Neighbours(us, empty);
+		} else {
+			actions = Neighbours(them, empty);
+		}
 		return actions;
 	}
 
-	void DoAction(int a) {
-
+	void DoAction(action_type a) {
+		empty[a.Index()] = false;
+		ourTurn = ~ourTurn;
 	}
 
 	bool GameOver () {
-		return true;
+		if (empty.none()) {
+			return true;
+		}
+
+		if ( Neighbours(us, empty).empty() || Neighbours(them, empty).empty() ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	void PlayBasicPolicy () {
