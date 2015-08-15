@@ -19,3 +19,36 @@ struct Coord {
 	static const Coord Invalid;
 
 };
+
+#include <vector>
+#include <bitset>
+class TronState {
+	std::bitset<15*15> bits;
+
+public:
+	using score_type = int;
+	using player_type = int;
+	using action_type = int;
+
+	std::vector<action_type> NextActions () {
+		std::vector<action_type> actions;
+		// TODO: actually generate possible actions
+		return actions;
+	}
+
+	void DoAction(int a) {
+
+	}
+
+	bool GameOver () {
+		return true;
+	}
+
+	void PlayBasicPolicy () {
+
+	}
+
+	score_type Result (player_type player) {
+		return 0;
+	}
+};

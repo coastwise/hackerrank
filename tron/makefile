@@ -6,6 +6,11 @@ flynn: flynn.o tron.o
 
 flynn.o: tron.hpp
 
+carlos: carlos.o tron.o
+	$(CXX) $(CXXFLAGS) -o carlos carlos.o tron.o
+
+carlos.o: tron.hpp
+
 tron.o: tron.hpp
 
 clean:
