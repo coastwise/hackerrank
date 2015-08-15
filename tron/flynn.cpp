@@ -5,18 +5,6 @@ using namespace std;
 
 #include "tron.hpp"
 
-bool operator== (const Coord& a, const Coord& b) {
-	return a.X == b.X && a.Y == b.Y;
-}
-
-Coord operator+ (Coord a, const Coord &b) {
-	return a += b;
-}
-
-ostream& operator<< (ostream& out, const Coord& c) {
-	return out << "{" << c.X << "," << c.Y << "}";
-}
-
 namespace std {
 	template<>
 	struct hash<Coord> {
@@ -38,21 +26,7 @@ namespace std {
 	}
 }
 
-
 typedef bitset<15*15> MapBits;
-//typedef vector<bool> MapBits;
-
-vector<Coord> Neighbours(Coord c, MapBits& empty) {
-	vector<Coord> neighbours;
-	for (int i = 0; i < 4; ++i) {
-		Coord neighbour = c + Coord::Directions[i];
-		if (empty[neighbour.Index()]) {
-			neighbours.push_back(neighbour);
-		}
-	}
-	return neighbours;
-}
-
 
 pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits empty) {
 

@@ -16,13 +16,24 @@ struct Coord {
 		return *this;
 	}
 
+	bool operator== (const Coord&);
+
+	Coord operator+ (Coord) const;
+
 	static const Coord Invalid;
 	static const Coord Directions [4];
 
 };
 
+#include <iostream>
+std::ostream& operator<< (std::ostream&, const Coord&);
+
+
 #include <vector>
 #include <bitset>
+
+std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty);
+
 class TronState {
 	std::bitset<15*15> bits;
 
