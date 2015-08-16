@@ -31,6 +31,7 @@ std::ostream& operator<< (std::ostream&, const Coord&);
 
 #include <vector>
 #include <bitset>
+#include <random>
 
 std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty);
 
@@ -75,7 +76,20 @@ public:
 	}
 
 	void PlayBasicPolicy () {
+		auto actions = NextActions();
 
+		if (actions.empty()) return;
+
+		int count = actions.size();
+		int choice = 0;
+		if (count > 1) {
+			auto dist = std::uniform_int_distribution<> {0, count-1};
+			// TODO: don't create a new engine for every call
+			auto engine = std::default_random_engine {};
+			choice = dist(engine);
+		}
+
+		DoAction(actions[choice]);
 	}
 
 	score_type Result (player_type player) {
