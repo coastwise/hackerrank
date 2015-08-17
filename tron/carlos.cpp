@@ -189,7 +189,8 @@ using namespace std::chrono;
 void FindMoveInTime (float timeLimit) {
 	auto t0 = high_resolution_clock::now();
 
-	TronState game = TronState();
+	std::bitset<15*15> empty;
+	TronState game = TronState(empty, Coord::Invalid, Coord::Invalid);
 
 	auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
 

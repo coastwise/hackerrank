@@ -49,6 +49,13 @@ public:
 
 	static const Coord NullAction;
 
+	TronState (std::bitset<15*15> empty, Coord us, Coord them) :
+		empty {empty},
+		us {us},
+		them {them},
+		ourTurn {true}
+	{}
+
 	std::vector<action_type> NextActions () {
 		std::vector<action_type> actions;
 		if (ourTurn) {
