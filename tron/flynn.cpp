@@ -109,18 +109,13 @@ const int Tie = 1;
 
 #define PRINT 0
 
-int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int maxPlies);
+int MinValue (TronState&, int alpha, int beta, int maxPlies);
 
-Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them, int maxPlies = numeric_limits<int>::max()) {
-	auto actions = Neighbours(us, empty);
+Coord MiniMaxDecision(TronState& state, int maxPlies = numeric_limits<int>::max()) {
+	auto actions = state.NextActions();
 	if (actions.empty()) {
-		// game over. did we loose, or tie?
-		actions = Neighbours(them, empty);
-		if (actions.empty()) {
-			return Coord::Invalid;
-		} else {
-			return Coord::Invalid;
-		}
+		// game over. no valid move to return.
+		return Coord::Invalid;
 	}
 
 	int alpha = numeric_limits<int>::min();
@@ -128,9 +123,9 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them, int maxPlies = numer
 	int bestValue = numeric_limits<int>::min();
 	Coord bestAction = Coord::Invalid;
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
-		empty[action->Index()] = false; // apply action
+		Coord oldCoord = state.DoAction(*action);
 
-		int value = MinValue(empty, *action, them, alpha, numeric_limits<int>::max(), maxPlies-1);
+		int value = MinValue(state, alpha, numeric_limits<int>::max(), maxPlies-1);
 		if (value > bestValue) {
 			bestValue = value;
 			bestAction = *action;
@@ -138,26 +133,22 @@ Coord MiniMaxDecision(MapBits& empty, Coord us, Coord them, int maxPlies = numer
 
 		alpha = max(alpha, value);
 
-		empty[action->Index()] = true; // undo action
+		state.UndoAction(*action, oldCoord);
 	}
 
 	return bestAction;
 }
 
-int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int maxPlies) {
-	auto actions = Neighbours(us, empty);
+int MaxValue (TronState& state, int alpha, int beta, int maxPlies) {
+	auto actions = state.NextActions();
 	if (actions.empty()) {
 		// game over. did we loose, or tie?
-		actions = Neighbours(them, empty);
-		if (actions.empty()) {
-			return Tie;
-		} else {
-			return Loss;
-		}
+		return state.Result();
 	}
 
 	if (maxPlies == 0) {
-		auto score = DualFloodFill(us, them, empty);
+		// TODO: make us, them, and empty private again
+		auto score = DualFloodFill(state.us, state.them, state.empty);
 		if (score.first == score.second) {
 			return Tie;
 		} else if (score.first > score.second) {
@@ -169,17 +160,17 @@ int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int max
 
 	int bestValue = numeric_limits<int>::min();
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
-		empty[action->Index()] = false; // apply action
+		Coord oldCoord = state.DoAction(*action);
 
 #if PRINT
 		cout << CursorUp15;
 		print_map(empty);
 #endif
 
-		int value = MinValue(empty, *action, them, alpha, beta, maxPlies-1);
+		int value = MinValue(state, alpha, beta, maxPlies-1);
 
 		if (value >= beta) {
-			empty[action->Index()] = true; // undo action
+			state.UndoAction(*action, oldCoord);
 			return value;
 		}
 
@@ -189,14 +180,14 @@ int MaxValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int max
 
 		alpha = max(alpha, value);
 
-		empty[action->Index()] = true; // undo action
+		state.UndoAction(*action, oldCoord);
 	}
 
 	return bestValue;
 }
 
-int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int maxPlies) {
-	auto actions = Neighbours(them, empty);
+int MinValue (TronState& state, int alpha, int beta, int maxPlies) {
+	auto actions = state.NextActions();
 	if (actions.empty()) {
 		// game over. since we go at the same time, and we evaluate our moves first
 		// if they don't have any moves, we've won
@@ -204,7 +195,7 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int max
 	}
 
 	if (maxPlies == 0) {
-		auto score = DualFloodFill(us, them, empty);
+		auto score = DualFloodFill(state.us, state.them, state.empty);
 		if (score.first == score.second) {
 			return Tie;
 		} else if (score.first > score.second) {
@@ -216,17 +207,17 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int max
 
 	int bestValue = numeric_limits<int>::max();
 	for (auto action = actions.begin(); action != actions.end(); ++action) {
-		empty[action->Index()] = false; // apply action
+		Coord oldCoord = state.DoAction(*action);
 
 #if PRINT
 		cout << CursorUp15;
 		print_map(empty);
 #endif
 
-		int value = MaxValue(empty, us, *action, alpha, beta, maxPlies-1);
+		int value = MaxValue(state, alpha, beta, maxPlies-1);
 
 		if (value <= alpha) {
-			empty[action->Index()] = true; // undo action
+			state.UndoAction(*action, oldCoord);
 			return value;
 		}
 
@@ -236,7 +227,7 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int max
 
 		beta = min(beta, value);
 
-		empty[action->Index()] = true; // undo action
+		state.UndoAction(*action, oldCoord);
 	}
 
 	return bestValue;
@@ -246,25 +237,12 @@ int MinValue (MapBits& empty, Coord us, Coord them, int alpha, int beta, int max
 int main () {
 	auto t0 = high_resolution_clock::now();
 
-	char player;
-	int x, y, ox, oy;
-
-	cin >> player;
-	cin >> y >> x >> oy >> ox;
-
 	Coord::MaxX = 15;
 
-	MapBits empty;
+	TronState gameState;
+	cin >> gameState;
 
-	for (int index = 0; index < 15*15; ++index) {
-		char space; cin >> space;
-		empty[index] = (space == '-');
-	}
-
-	print_map(empty);
-
-	Coord us = Coord(x,y);
-	Coord them = Coord(ox,oy);
+	//print_map(gameState.empty);
 
 	Coord bestMove = Coord::Invalid;
 	int depth = 2;
@@ -273,7 +251,7 @@ int main () {
 	auto elapsed = duration_cast<milliseconds>(t1-t0).count();
 	while (elapsed < 800) {
 		t0 = t1;
-		bestMove = MiniMaxDecision(empty, us, them, depth);
+		bestMove = MiniMaxDecision(gameState, depth);
 		depth += 2;
 
 		t1 = high_resolution_clock::now();
