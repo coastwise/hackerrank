@@ -187,27 +187,27 @@ TronState::action_type BasicPolicy (const TronState& currentState) {
 #include <chrono>
 using namespace std::chrono;
 
-void FindMoveInTime (float timeLimit) {
+int main () {
 	auto t0 = high_resolution_clock::now();
 
-	std::bitset<15*15> empty;
-	TronState game = TronState(empty, Coord::Invalid, Coord::Invalid);
+	Coord::MaxX = 15;
+
+	TronState game;
+	std::cin >> game;
 
 	auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
 
 	auto t1 = high_resolution_clock::now();
-	auto elapsed = duration_cast<milliseconds>(t1-t0).count();
+	milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
+	milliseconds timeLimit = milliseconds(800);
 	while (elapsed < timeLimit) {
 		searchTree.Update();
 		t1 = high_resolution_clock::now();
-		elapsed = duration_cast<milliseconds>(t1-t0).count();
+		elapsed = duration_cast<milliseconds>(t1-t0);
 	}
 
 	std::cout << searchTree.BestMove();
-}
 
-int main () {
-	FindMoveInTime(1000);
 	return 0;
 }
 
