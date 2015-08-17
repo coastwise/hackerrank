@@ -1,6 +1,8 @@
 CXX = g++
 CXXFLAGS = -Wall -std=c++11 -O2
 
+all: flynn carlos
+
 flynn: flynn.o tron.o
 	$(CXX) $(CXXFLAGS) -o flynn flynn.o tron.o
 
