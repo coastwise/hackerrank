@@ -53,8 +53,10 @@ public:
 	static const Coord NullAction;
 
 	TronState () :
+		empty {},
 		us {Coord::Invalid},
-		them {Coord::Invalid}
+		them {Coord::Invalid},
+		ourTurn {false}
 	{}
 
 	TronState (std::bitset<15*15> empty, Coord us, Coord them) :

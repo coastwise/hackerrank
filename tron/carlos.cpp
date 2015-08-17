@@ -31,9 +31,13 @@ private:
 
 public:
 	Node (NodePtr parent, action_t action, std::vector<action_t> untriedActions) :
-		parent{parent},
-		action{action},
-		untriedActions{untriedActions}
+		parent {parent},
+		player {},
+		action {action},
+		visitCount {0},
+		sumValue {0},
+		children {},
+		untriedActions {untriedActions}
 	{
 		std::random_shuffle(untriedActions.begin(), untriedActions.end());
 	}
