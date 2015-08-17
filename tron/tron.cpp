@@ -28,3 +28,23 @@ std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty) {
 	}
 	return neighbours;
 }
+
+std::istream& operator>> (std::istream& cin, Coord& coord) {
+	return cin >> coord.Y >> coord.X;
+}
+
+std::istream& operator>> (std::istream& cin, TronState& state) {
+	char player;
+	cin >> player;
+
+	cin >> state.us >> state.them;
+
+	for (int index = 0; index < 15*15; ++index) {
+		char space; cin >> space;
+		state.empty[index] = (space == '-');
+	}
+
+	state.ourTurn = true;
+
+	return cin;
+}

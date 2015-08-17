@@ -27,6 +27,7 @@ struct Coord {
 
 #include <iostream>
 std::ostream& operator<< (std::ostream&, const Coord&);
+std::istream& operator>> (std::istream&, Coord&);
 
 
 #include <vector>
@@ -48,6 +49,11 @@ public:
 	using action_type = Coord;
 
 	static const Coord NullAction;
+
+	TronState () :
+		us {Coord::Invalid},
+		them {Coord::Invalid}
+	{}
 
 	TronState (std::bitset<15*15> empty, Coord us, Coord them) :
 		empty {empty},
@@ -87,4 +93,8 @@ public:
 		return 0;
 	}
 
+	friend std::istream& operator>> (std::istream&, TronState&);	
+
 };
+
+std::istream& operator>> (std::istream&, TronState&);
