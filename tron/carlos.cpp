@@ -29,7 +29,7 @@ private:
 	std::vector<action_t> untriedActions;
 
 public:
-	Node (NodePtr parent, action_t action, std::vector<action_t> untriedActions) : 
+	Node (NodePtr parent, action_t action, std::vector<action_t> untriedActions) :
 		parent{parent},
 		action{action},
 		untriedActions{untriedActions}
@@ -140,6 +140,7 @@ public:
 
 		// backpropagation
 		while (currentNode != nullptr) {
+			// TODO: cache result somehow?
 			currentNode->Update(currentState.Result(currentNode->player));
 			currentNode = currentNode->parent;
 		}
