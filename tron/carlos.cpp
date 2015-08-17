@@ -100,15 +100,18 @@ template <typename GameState>
 class Tree {
 	typedef typename GameState::action_type action_t;
 	typedef Node<GameState>* NodePtr;
+	typedef action_t (*PolicyFn) (const GameState&);
 
 private:
 	GameState gameState;
 	Node<GameState> root;
+	PolicyFn simulationPolicy;
 
 public:
-	explicit Tree (GameState game) :
+	explicit Tree (GameState game, PolicyFn simulationPolicy) :
 		gameState {game},
-		root {nullptr, GameState::NullAction, game.NextActions()}
+		root {nullptr, GameState::NullAction, game.NextActions()},
+		simulationPolicy {simulationPolicy}
 	{}
 
 	void Update () {
@@ -131,7 +134,8 @@ public:
 
 		// simulation
 		while (!currentState.GameOver()) {
-			currentState.PlayBasicPolicy();
+			action_t action = simulationPolicy(currentState);
+			currentState.DoAction(action);
 		}
 
 		// backpropagation
@@ -159,6 +163,25 @@ public:
 
 #include "tron.hpp"
 
+#include <random>
+
+auto randomEngine = std::default_random_engine {};
+
+TronState::action_type BasicPolicy (const TronState& currentState) {
+	auto actions = currentState.NextActions();
+
+	if (actions.empty()) return Coord::Invalid;
+
+	int count = actions.size();
+	int choice = 0;
+	if (count > 1) {
+		auto dist = std::uniform_int_distribution<> {0, count-1};
+		choice = dist(randomEngine);
+	}
+
+	return actions[choice];
+}
+
 #include <iostream>
 #include <chrono>
 using namespace std::chrono;
@@ -168,7 +191,7 @@ void FindMoveInTime (float timeLimit) {
 
 	TronState game = TronState();
 
-	auto searchTree = MCTS::Tree<TronState>(game);
+	auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
 
 	auto t1 = high_resolution_clock::now();
 	auto elapsed = duration_cast<milliseconds>(t1-t0).count();
