@@ -48,6 +48,8 @@ public:
 	using player_type = bool;
 	using action_type = Coord;
 
+	static const Coord NullAction;
+
 	std::vector<action_type> NextActions () {
 		std::vector<action_type> actions;
 		if (ourTurn) {

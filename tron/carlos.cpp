@@ -38,7 +38,7 @@ public:
 	}
 
 	action_t BestMove () {
-		action_t bestMove;
+		action_t bestMove = GameState::NullAction;
 		int mostVisits = 0;
 		for (auto node = children.begin(); node != children.end(); ++node) {
 			if (node->visitCount > mostVisits) {
@@ -106,7 +106,10 @@ private:
 	Node<GameState> root;
 
 public:
-	explicit Tree (GameState game) : gameState{game}, root{nullptr,0,game.NextActions()} {}
+	explicit Tree (GameState game) :
+		gameState {game},
+		root {nullptr, GameState::NullAction, game.NextActions()}
+	{}
 
 	void Update () {
 
