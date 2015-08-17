@@ -5,7 +5,7 @@ struct Coord {
 
 	Coord (int x, int y) : X{x}, Y{y} {}
 
-	int Index () {
+	int Index () const {
 		int result = MaxX*Y + X;
 		return result;
 	}
@@ -56,7 +56,7 @@ public:
 		ourTurn {true}
 	{}
 
-	std::vector<action_type> NextActions () {
+	std::vector<action_type> NextActions () const {
 		std::vector<action_type> actions;
 		if (ourTurn) {
 			actions = Neighbours(us, empty);
@@ -71,7 +71,7 @@ public:
 		ourTurn = ~ourTurn;
 	}
 
-	bool GameOver () {
+	bool GameOver () const {
 		if (empty.none()) {
 			return true;
 		}
@@ -83,8 +83,8 @@ public:
 		return false;
 	}
 
-
-	score_type Result (player_type player) {
+	score_type Result (player_type player) const {
 		return 0;
 	}
+
 };
