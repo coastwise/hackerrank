@@ -16,5 +16,6 @@ carlos.o: tron.hpp
 tron.o: tron.hpp
 
 clean:
+	rm -f *.o
 	rm -f flynn
-	
+	rm -f carlos
