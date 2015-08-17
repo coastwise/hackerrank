@@ -101,9 +101,7 @@ void print_map (MapBits& empty) {
 using namespace std::chrono;
 
 
-const int Win = 2;
-const int Loss = 0;
-const int Tie = 1;
+
 
 #include <limits>
 

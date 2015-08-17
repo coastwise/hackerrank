@@ -1,3 +1,5 @@
+enum Result { Loss, Tie, Win }; // 0, 1, 2 = zero-sum
+
 struct Coord {
 	int X, Y;
 
@@ -107,15 +109,31 @@ public:
 		return false;
 	}
 
-	score_type Result (player_type player) const {
-		return 0;
+	score_type Result (bool ourPerspective) const {
+		auto ourActions = Neighbours(us, empty);
+		auto theirActions = Neighbours(them, empty);
+
+		enum Result result = Tie;
+
+		if (ourActions.empty() && theirActions.empty()) {
+			result = Tie;
+		} else if (ourActions.empty()) {
+			result = ourPerspective ? Loss : Win;
+		} else if (theirActions.empty()) {
+			result = ourPerspective ? Win : Loss;
+		} else {
+			// Not a game over...
+			result = Tie;
+		}
+
+		return result;
 	}
 
 	score_type Result () const {
 		return Result(ourTurn);
 	}
 
-	friend std::istream& operator>> (std::istream&, TronState&);	
+	friend std::istream& operator>> (std::istream&, TronState&);
 
 };
 
