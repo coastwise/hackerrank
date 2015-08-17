@@ -238,19 +238,20 @@ int main () {
 	int depth = 2;
 
 	auto t1 = high_resolution_clock::now();
-	auto elapsed = duration_cast<milliseconds>(t1-t0).count();
-	while (elapsed < 800) {
-		t0 = t1;
-		bestMove = MiniMaxDecision(gameState, depth);
-		depth += 2;
+	auto elapsed = duration_cast<milliseconds>(t1-t0);
 
+	auto limit = milliseconds(800);
+	while (elapsed < limit) {
+		bestMove = MiniMaxDecision(gameState, depth);
+		
 		t1 = high_resolution_clock::now();
-		auto plyDuration = duration_cast<milliseconds>(t1-t0).count();
-		elapsed += plyDuration;
+		elapsed = duration_cast<milliseconds>(t1-t0);
+
+		depth += 2;
 	}
 
 	cout << "our best move: " << bestMove << endl;
-	cout << "finished after " << elapsed << " seconds and " << depth << " plies" << endl;
+	cout << "finished after " << elapsed.count() << " seconds and " << depth << " plies" << endl;
 
 	return 0;
 }
