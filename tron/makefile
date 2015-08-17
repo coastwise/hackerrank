@@ -14,11 +14,17 @@ all: flynn carlos
 
 flynn: flynn.o tron.o
 	$(CXX) $(CXXFLAGS) -o flynn flynn.o tron.o
+ifdef DEBUG
+	dsymutil flynn
+endif
 
 flynn.o: tron.hpp
 
 carlos: carlos.o tron.o
 	$(CXX) $(CXXFLAGS) -o carlos carlos.o tron.o
+ifdef DEBUG
+	dsymutil carlos
+endif
 
 carlos.o: tron.hpp
 
