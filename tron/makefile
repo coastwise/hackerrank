@@ -1,4 +1,4 @@
-CXX = g++
+CXX = llvm-g++
 CXXFLAGS = -Wall -std=c++11
 
 DEBUG = true
