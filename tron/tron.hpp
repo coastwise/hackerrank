@@ -135,6 +135,15 @@ public:
 
 	friend std::istream& operator>> (std::istream&, TronState&);
 
+	void PrintMap () {
+		for (int index = 0; index < empty.size(); ++index) {
+			std::cout << (empty[index] ? ' ' : '#');
+			if ((index+1) % Coord::MaxX == 0) {
+				std::cout << std::endl;
+			}
+		}
+	}
+
 };
 
 std::istream& operator>> (std::istream&, TronState&);

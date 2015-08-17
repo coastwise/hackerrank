@@ -87,14 +87,6 @@ const string CursorDown1 = "\x1b[B\r";
 const string CursorUp15 = "\x1b[15A\r";
 const string CursorDown15 = "\x1b[15B\r";
 
-void print_map (MapBits& empty) {
-	for (int index = 0; index < empty.size(); ++index) {
-		cout << (empty[index] ? ' ' : '#');
-		if ((index+1) % Coord::MaxX == 0) {
-			cout << endl;
-		}
-	}
-}
 
 #include <thread>
 #include <chrono>
@@ -162,7 +154,7 @@ int MaxValue (TronState& state, int alpha, int beta, int maxPlies) {
 
 #if PRINT
 		cout << CursorUp15;
-		print_map(empty);
+		state.PrintMap();
 #endif
 
 		int value = MinValue(state, alpha, beta, maxPlies-1);
@@ -209,7 +201,7 @@ int MinValue (TronState& state, int alpha, int beta, int maxPlies) {
 
 #if PRINT
 		cout << CursorUp15;
-		print_map(empty);
+		state.PrintMap();
 #endif
 
 		int value = MaxValue(state, alpha, beta, maxPlies-1);
@@ -240,7 +232,7 @@ int main () {
 	TronState gameState;
 	cin >> gameState;
 
-	//print_map(gameState.empty);
+	gameState.PrintMap();
 
 	Coord bestMove = Coord::Invalid;
 	int depth = 2;
