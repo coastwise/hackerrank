@@ -15,6 +15,7 @@ class Node {
 	typedef typename GameState::action_type action_t;
 
 	typedef Node<GameState>* NodePtr;
+	typedef std::unique_ptr<Node> UniqueNodePtr;
 
 private:
 	NodePtr parent;
@@ -24,7 +25,7 @@ private:
 	int visitCount;
 	float sumValue; // TODO: refactor to score_t
 
-	std::vector<Node> children;
+	std::vector<UniqueNodePtr> children;
 
 	std::vector<action_t> untriedActions;
 
@@ -40,10 +41,11 @@ public:
 	action_t BestMove () {
 		action_t bestMove = GameState::NullAction;
 		int mostVisits = 0;
-		for (auto node = children.begin(); node != children.end(); ++node) {
-			if (node->visitCount > mostVisits) {
-				mostVisits = node->visitCount;
-				bestMove = node->action;
+		for (auto node_ptr_iter = children.begin(); node_ptr_iter != children.end(); ++node_ptr_iter) {
+			Node<GameState>& child = **node_ptr_iter;
+			if (child.visitCount > mostVisits) {
+				mostVisits = child.visitCount;
+				bestMove = child.action;
 			}
 		}
 		return bestMove;
@@ -61,12 +63,15 @@ public:
 	NodePtr SelectChild (float C = 1) {
 		NodePtr bestChild = nullptr;
 		float bestValue = 0;
-		for (auto child : children) {
+		for (auto node_ptr_iter = children.begin(); node_ptr_iter != children.end(); ++node_ptr_iter) {
+			UniqueNodePtr& unique_node_ptr = *node_ptr_iter;
+			Node<GameState>& child = *unique_node_ptr;
+
 			// NOTE: UCB1
 			float value = child.EstimatedValue() + C * sqrt(2 * log(visitCount) / child.visitCount);
 			if (value > bestValue) {
 				bestValue = value;
-				bestChild = &child;
+				bestChild = unique_node_ptr.get();
 			}
 		}
 		return bestChild;
@@ -90,8 +95,9 @@ public:
 	}
 
 	NodePtr AddChild(action_t action, std::vector<action_t> nextActions) {
-		children.emplace_back(this, action, move(nextActions));
-		return &children.back();
+		NodePtr child = new Node(this, action, move(nextActions));
+		children.emplace_back(child); // construct the owning unique_ptr in place
+		return child;
 	}
 
 };
