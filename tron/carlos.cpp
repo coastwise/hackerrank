@@ -98,9 +98,10 @@ public:
 	}
 
 	NodePtr AddChild(action_t action, std::vector<action_t> nextActions) {
-		NodePtr child = new Node(this, action, move(nextActions));
-		children.emplace_back(child); // construct the owning unique_ptr in place
-		return child;
+		UniqueNodePtr child {new Node(this, action, move(nextActions))};
+		NodePtr childRef = child.get();
+		children.push_back(move(child));
+		return childRef;
 	}
 
 };
