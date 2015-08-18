@@ -45,8 +45,8 @@ public:
 	action_t BestMove () {
 		action_t bestMove = GameState::NullAction;
 		int mostVisits = 0;
-		for (auto node_ptr_iter = children.begin(); node_ptr_iter != children.end(); ++node_ptr_iter) {
-			Node<GameState>& child = **node_ptr_iter;
+		for (UniqueNodePtr& unique_node_ptr : children) {
+			Node<GameState>& child = *unique_node_ptr;
 			if (child.visitCount > mostVisits) {
 				mostVisits = child.visitCount;
 				bestMove = child.action;
@@ -67,8 +67,7 @@ public:
 	NodePtr SelectChild (float C = 1) {
 		NodePtr bestChild = nullptr;
 		float bestValue = 0;
-		for (auto node_ptr_iter = children.begin(); node_ptr_iter != children.end(); ++node_ptr_iter) {
-			UniqueNodePtr& unique_node_ptr = *node_ptr_iter;
+		for (UniqueNodePtr& unique_node_ptr : children) {
 			Node<GameState>& child = *unique_node_ptr;
 
 			// NOTE: UCB1
