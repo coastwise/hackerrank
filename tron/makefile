@@ -32,5 +32,6 @@ tron.o: tron.hpp
 
 clean:
 	rm -f *.o
+	rm -rf *.dSYM
 	rm -f flynn
 	rm -f carlos
