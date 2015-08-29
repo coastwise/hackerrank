@@ -217,7 +217,15 @@ int main () {
 		elapsed = duration_cast<milliseconds>(t1-t0);
 	}
 
-	std::cout << searchTree.BestMove();
+	Coord curr = game.us;
+	Coord dest = searchTree.BestMove();
+
+	if (dest.X > curr.X)      std::cout << "RIGHT";
+	else if (dest.X < curr.X) std::cout << "LEFT";
+	else if (dest.Y > curr.Y) std::cout << "UP";
+	else if (dest.Y < curr.Y) std::cout << "DOWN";
+
+	std::cout << std::endl;
 
 	return 0;
 }
