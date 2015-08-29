@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm> // random_shuffle
 #include <cmath>     // sqrt & log
+#include <memory>    // unique_ptr
 
 namespace MCTS {
 
