@@ -37,7 +37,11 @@ std::istream& operator>> (std::istream& cin, TronState& state) {
 	char player;
 	cin >> player;
 
-	cin >> state.us >> state.them;
+	if (player == 'r') {
+		cin >> state.us >> state.them;
+	} else {
+		cin >> state.them >> state.us;
+	}
 
 	for (int index = 0; index < 15*15; ++index) {
 		char space; cin >> space;
