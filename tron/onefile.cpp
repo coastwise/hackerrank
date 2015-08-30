@@ -424,7 +424,7 @@ int main () {
 
 	auto t1 = high_resolution_clock::now();
 	milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
-	milliseconds timeLimit = milliseconds(2000);
+	milliseconds timeLimit = milliseconds(1500);
 	while (elapsed < timeLimit) {
 		searchTree.Update();
 		t1 = high_resolution_clock::now();
