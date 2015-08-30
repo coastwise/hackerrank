@@ -214,6 +214,8 @@ std::istream& operator>> (std::istream& cin, TronState& state) {
 #include <algorithm> // random_shuffle
 #include <cmath>     // sqrt & log
 #include <memory>
+#include <cassert>
+#include <limits>
 
 namespace MCTS {
 
@@ -263,8 +265,10 @@ public:
 	}
 
 	NodePtr SelectChild (float C = 1) {
+		assert(children.size() > 0);
+		
 		NodePtr bestChild = nullptr;
-		float bestValue = 0;
+		float bestValue = -std::numeric_limits<float>::infinity();
 		for (UniqueNodePtr& unique_node_ptr : children) {
 			Node& child = *unique_node_ptr;
 
