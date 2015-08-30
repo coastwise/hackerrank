@@ -231,8 +231,8 @@ class Node {
 private:
 	NodePtr parent;
 
-	player_t player;
-	action_t action;
+	player_t player; // who took the action to get to this state
+	action_t action; // what action was taken to get to this state
 	int visitCount;
 	float sumValue; // TODO: refactor to score_t
 
@@ -241,9 +241,9 @@ private:
 	std::vector<action_t> untriedActions;
 
 public:
-	Node (NodePtr parent, action_t action, std::vector<action_t> untriedActions) :
+	Node (NodePtr parent, player_t player, action_t action, std::vector<action_t> untriedActions) :
 		parent {parent},
-		player {},
+		player {player},
 		action {action},
 		visitCount {0},
 		sumValue {0},
@@ -251,19 +251,6 @@ public:
 		untriedActions {untriedActions}
 	{
 		std::random_shuffle(untriedActions.begin(), untriedActions.end());
-	}
-
-	action_t BestMove () {
-		action_t bestMove = TronState::NullAction;
-		int mostVisits = 0;
-		for (UniqueNodePtr& unique_node_ptr : children) {
-			Node& child = *unique_node_ptr;
-			if (child.visitCount > mostVisits) {
-				mostVisits = child.visitCount;
-				bestMove = child.action;
-			}
-		}
-		return bestMove;
 	}
 
 	void Update (float value) {
@@ -309,7 +296,7 @@ public:
 	}
 
 	NodePtr AddChild(action_t action, std::vector<action_t> nextActions) {
-		UniqueNodePtr child {new Node(this, action, move(nextActions))};
+		UniqueNodePtr child {new Node(this, !player, action, move(nextActions))};
 		NodePtr childRef = child.get();
 		children.push_back(move(child));
 		return childRef;
@@ -330,7 +317,7 @@ private:
 public:
 	explicit Tree (TronState game, PolicyFn simulationPolicy) :
 		tronState {game},
-		root {nullptr, TronState::NullAction, game.NextActions()},
+		root {nullptr, false, TronState::NullAction, game.NextActions()},
 		simulationPolicy {simulationPolicy}
 	{}
 
@@ -368,7 +355,28 @@ public:
 	}
 
 	action_t BestMove () {
-		return root.BestMove();
+	
+		action_t bestMove = TronState::NullAction;
+		int mostVisits = 0;
+
+		std::cerr << "Move\tVisits\tEstimated" << std::endl;
+
+		for (std::unique_ptr<Node>& unique_node_ptr : root.children) {
+			Node& child = *unique_node_ptr;
+
+			TronState currentState = tronState; // copy
+			currentState.DoAction(child.action);
+			int result = currentState.Result(root.player);
+
+			std::cerr << child.action << "\t" << child.visitCount << "\t" << child.EstimatedValue() << std::endl;
+
+			if (child.visitCount > mostVisits) {
+				mostVisits = child.visitCount;
+				bestMove = child.action;
+			}
+		}
+		return bestMove;
+	
 	}
 
 };
@@ -428,7 +436,6 @@ int main () {
 	else if (dest.Y < curr.Y) std::cout << "UP";
 
 	std::cout << std::endl;
-
 
 	return 0;
 }
