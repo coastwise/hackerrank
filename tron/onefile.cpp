@@ -372,7 +372,7 @@ public:
 			if (currentNode->player) {
 				currentNode->Update(ourResult);
 			} else {
-				currentNode->Update(ourResult);
+				currentNode->Update(theirResult);
 			}
 			currentNode = currentNode->parent;
 		}
