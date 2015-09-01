@@ -329,12 +329,14 @@ private:
 	TronState tronState;
 	Node root;
 	PolicyFn simulationPolicy;
+	float C;
 
 public:
-	explicit Tree (TronState game, PolicyFn simulationPolicy) :
+	explicit Tree (TronState game, PolicyFn simulationPolicy, float C) :
 		tronState {game},
 		root {nullptr, false, TronState::NullAction, game.NextActions()},
-		simulationPolicy {simulationPolicy}
+		simulationPolicy {simulationPolicy},
+		C {C}
 	{}
 
 	void Update () {
@@ -344,7 +346,7 @@ public:
 
 		// selection
 		while (currentNode->IsFullyExpanded() && !currentNode->IsTerminal()) {
-			currentNode = currentNode->SelectChild();
+			currentNode = currentNode->SelectChild(C);
 			currentState.DoAction(currentNode->action);
 		}
 
@@ -439,11 +441,12 @@ int main () {
 	TronState game;
 	std::cin >> game;
 
-	auto searchTree = MCTS::Tree(game, BasicPolicy);
 
+	auto searchTree = MCTS::Tree(game, BasicPolicy, 0.7f);
+	
 	auto t1 = high_resolution_clock::now();
 	milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
-	milliseconds timeLimit = milliseconds(1500);
+	milliseconds timeLimit = milliseconds(1900);
 	while (elapsed < timeLimit) {
 		searchTree.Update();
 		t1 = high_resolution_clock::now();
