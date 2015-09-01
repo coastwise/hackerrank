@@ -442,7 +442,7 @@ int main () {
 	std::cin >> game;
 
 
-	auto searchTree = MCTS::Tree(game, BasicPolicy, 0.7f);
+	auto searchTree = MCTS::Tree(game, BasicPolicy, 1);
 	
 	auto t1 = high_resolution_clock::now();
 	milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
