@@ -358,11 +358,18 @@ public:
 			action_t action = simulationPolicy(currentState);
 			currentState.DoAction(action);
 		}
+		
+		// cache results
+		int ourResult = currentState.Result(true);
+		int theirResult = Result::Win - ourResult; // zero sum
 
 		// backpropagation
 		while (currentNode != nullptr) {
-			// TODO: cache result somehow?
-			currentNode->Update(currentState.Result(currentNode->player));
+			if (currentNode->player) {
+				currentNode->Update(ourResult);
+			} else {
+				currentNode->Update(ourResult);
+			}
 			currentNode = currentNode->parent;
 		}
 
