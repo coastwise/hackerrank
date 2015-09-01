@@ -138,19 +138,12 @@ public:
 	}
 
 	friend std::istream& operator>> (std::istream&, TronState&);
-
-	void PrintMap () {
-		for (int index = 0; index < empty.size(); ++index) {
-			std::cout << (empty[index] ? ' ' : '#');
-			if ((index+1) % Coord::MaxX == 0) {
-				std::cout << std::endl;
-			}
-		}
-	}
+	friend std::ostream& operator<< (std::ostream&, TronState&);
 
 };
 
 std::istream& operator>> (std::istream&, TronState&);
+std::ostream& operator<< (std::ostream&, const TronState&);
 
 // tron.cpp
 
@@ -206,6 +199,23 @@ std::istream& operator>> (std::istream& cin, TronState& state) {
 
 	return cin;
 }
+
+std::ostream& operator<< (std::ostream& cout, const TronState& state) {
+	int ourIndex = state.us.Index();
+	int theirIndex = state.them.Index();
+	for (int index = 0; index < state.empty.size(); ++index) {
+		if (index == ourIndex) cout << 'U';
+		else if (index == theirIndex) cout << 'T';
+		else if (state.empty[index]) cout << ' ';
+		else cout << '#';
+		
+		if ((index+1) % Coord::MaxX == 0) {
+			cout << std::endl;
+		}
+	}
+	return cout;
+}
+
 
 
 // carlos.cpp

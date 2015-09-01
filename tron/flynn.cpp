@@ -232,7 +232,7 @@ int main () {
 	TronState gameState;
 	cin >> gameState;
 
-	gameState.PrintMap();
+	cout << gameState;
 
 	Coord bestMove = Coord::Invalid;
 	int depth = 2;
