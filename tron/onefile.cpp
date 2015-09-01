@@ -89,13 +89,13 @@ public:
 		}
 
 		empty[newCoord.Index()] = false;
-		ourTurn = ~ourTurn;
+		ourTurn = !ourTurn;
 
 		return oldCoord;
 	}
 
 	void UndoAction(action_type newCoord, action_type oldCoord) {
-		ourTurn = ~ourTurn;
+		ourTurn = !ourTurn;
 		empty[newCoord.Index()] = true;
 		if (ourTurn) us = oldCoord;
 		else them = oldCoord;
