@@ -113,6 +113,10 @@ public:
 		return false;
 	}
 
+	friend std::istream& operator>> (std::istream&, TronState&);
+	friend std::ostream& operator<< (std::ostream&, const TronState&);
+
+
 	score_type Result (bool ourPerspective) const {
 		auto ourActions = Neighbours(us, empty);
 		auto theirActions = Neighbours(them, empty);
@@ -137,8 +141,6 @@ public:
 		return Result(ourTurn);
 	}
 
-	friend std::istream& operator>> (std::istream&, TronState&);
-	friend std::ostream& operator<< (std::ostream&, TronState&);
 
 };
 
