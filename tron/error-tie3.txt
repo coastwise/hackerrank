@@ -1,0 +1,17 @@
+g
+8 8 6 10
+###############
+#rrrr--#------#
+#rrrr--#gg----#
+#rrrr--#gggggg#
+#rrrr--#gggggg#
+#r-------gg-gg#
+#r#----#--g-#g#
+#r##-#####-##g#
+#r#----#r---#g#
+#r----rrrgg-gg#
+#r-rrrr#gggggg#
+#rrrrrr#gggggg#
+#rrrr-r#--gggg#
+#--rrrr#---ggg#
+###############

@@ -37,6 +37,11 @@ std::istream& operator>> (std::istream&, Coord&);
 #include <vector>
 #include <bitset>
 
+int ManhattanDistance(const Coord& a, const Coord& b) {
+	int result = abs(a.X - b.X) + abs(a.Y - b.Y);
+	return result;
+}
+
 std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty);
 
 class TronState {
@@ -120,6 +125,10 @@ public:
 	score_type Result (bool ourPerspective) const {
 		auto ourActions = Neighbours(us, empty);
 		auto theirActions = Neighbours(them, empty);
+
+		if (ManhattanDistance(us, them) == 1) {
+			theirActions.push_back(us);
+		}
 
 		enum Result result = Tie;
 
