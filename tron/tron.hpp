@@ -35,11 +35,11 @@ std::istream& operator>> (std::istream&, Coord&);
 #include <vector>
 #include <bitset>
 
-std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty);
+std::vector<Coord> Neighbours(const Coord& c, const std::vector<bool>& empty);
 
 class TronState {
 public: // TODO: make us, them, and empty private again
-	std::bitset<15*15> empty;
+	std::vector<bool> empty;
 	Coord us;
 	Coord them;
 
@@ -59,7 +59,7 @@ public:
 		ourTurn {false}
 	{}
 
-	TronState (std::bitset<15*15> empty, Coord us, Coord them) :
+	TronState (std::vector<bool> empty, Coord us, Coord them) :
 		empty {empty},
 		us {us},
 		them {them},
@@ -100,10 +100,6 @@ public:
 	}
 
 	bool GameOver () const {
-		if (empty.none()) {
-			return true;
-		}
-
 		if ( Neighbours(us, empty).empty() || Neighbours(them, empty).empty() ) {
 			return true;
 		}

@@ -26,7 +26,17 @@ namespace std {
 	}
 }
 
-typedef bitset<15*15> MapBits;
+typedef std::vector<bool> MapBits;
+
+int Count( MapBits& bits )
+{
+	int result = 0;
+	for( int i = 0; i < bits.size(); ++i )
+	{
+		if( bits[i] ) result++;
+	}
+	return result;
+}
 
 pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits empty) {
 
@@ -63,7 +73,7 @@ pair<int,int> DualFloodFill (const Coord& A, const Coord& B, MapBits empty) {
 		}
 	}
 
-	return make_pair(a_fill.count(), b_fill.count());
+	return make_pair( Count(a_fill), Count(b_fill) );
 }
 
 #include <sstream>

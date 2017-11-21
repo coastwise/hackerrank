@@ -18,7 +18,7 @@ std::ostream& operator<< (std::ostream& out, const Coord& coord) {
 	return out << "{" << coord.X << "," << coord.Y << "}";
 }
 
-std::vector<Coord> Neighbours(const Coord& c, const std::bitset<15*15>& empty) {
+std::vector<Coord> Neighbours(const Coord& c, const std::vector<bool>& empty) {
 	std::vector<Coord> neighbours;
 	for (int i = 0; i < 4; ++i) {
 		Coord neighbour = c + Coord::Directions[i];
