@@ -34,18 +34,43 @@ std::istream& operator>> (std::istream& cin, Coord& coord) {
 }
 
 std::istream& operator>> (std::istream& cin, TronState& state) {
-	char player;
-	cin >> player;
+	int width, height;
+	cin >> width >> height;
+	cin.ignore(256,'\n');
 
-	if (player == 'r') {
-		cin >> state.us >> state.them;
-	} else {
-		cin >> state.them >> state.us;
-	}
+	Coord::MaxX = width;
 
-	for (int index = 0; index < 15*15; ++index) {
-		char space; cin >> space;
-		state.empty[index] = (space == '-');
+	int size = width * height;
+	state.empty.resize( size, false );
+
+	for (int row = 0; row < height; ++row)
+	{
+		char line[1024];
+		cin.getline(line, 1024);
+
+		for (int col = 0; col < width; ++col)
+		{
+			int index = row * width + col;
+
+			switch(line[col])
+			{
+				case '1':
+					state.us = Coord( col, row );
+					break;
+				case '2':
+					state.them = Coord( col, row );
+					break;
+				//case '#':
+				case ' ':
+					state.empty[index] = true;
+					break;
+				case '\0':
+					std::cerr << "warning: early ending to row " << row << std::endl;
+
+					break;
+			}
+		}
+
 	}
 
 	state.ourTurn = true;
