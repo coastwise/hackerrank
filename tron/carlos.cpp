@@ -210,29 +210,35 @@ int main () {
 
 	Coord::MaxX = 15;
 
-	TronState game;
-	std::cin >> game;
+	bool gameover = false;
+	while(!gameover)
+	{
+		TronState game;
+		std::cin >> game;
+		std::cerr << game;
+		gameover = game.GameOver();
 
-	auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
+		auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
 
-	auto t1 = high_resolution_clock::now();
-	milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
-	milliseconds timeLimit = milliseconds(800);
-	while (elapsed < timeLimit) {
-		searchTree.Update();
-		t1 = high_resolution_clock::now();
-		elapsed = duration_cast<milliseconds>(t1-t0);
+		auto t1 = high_resolution_clock::now();
+		milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
+		milliseconds timeLimit = milliseconds(800);
+		while (elapsed < timeLimit) {
+			searchTree.Update();
+			t1 = high_resolution_clock::now();
+			elapsed = duration_cast<milliseconds>(t1-t0);
+		}
+
+		Coord curr = game.us;
+		Coord dest = searchTree.BestMove();
+
+		if (dest.X > curr.X)      std::cout << "2";
+		else if (dest.X < curr.X) std::cout << "4";
+		else if (dest.Y > curr.Y) std::cout << "3";
+		else if (dest.Y < curr.Y) std::cout << "1";
+
+		std::cout << std::endl;
 	}
-
-	Coord curr = game.us;
-	Coord dest = searchTree.BestMove();
-
-	if (dest.X > curr.X)      std::cout << "RIGHT";
-	else if (dest.X < curr.X) std::cout << "LEFT";
-	else if (dest.Y > curr.Y) std::cout << "UP";
-	else if (dest.Y < curr.Y) std::cout << "DOWN";
-
-	std::cout << std::endl;
 
 	return 0;
 }
