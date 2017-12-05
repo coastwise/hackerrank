@@ -1,3 +1,5 @@
+#pragma once
+
 enum Result { Loss, Tie, Win }; // 0, 1, 2 = zero-sum
 
 struct Coord {
@@ -18,7 +20,7 @@ struct Coord {
 		return *this;
 	}
 
-	bool operator== (const Coord&);
+	bool operator== (const Coord&) const;
 
 	Coord operator+ (Coord) const;
 
@@ -107,6 +109,16 @@ public:
 		}
 
 		return false;
+	}
+
+	bool IsValid () const {
+		if (empty.size() == 0)
+			return false;
+		if (us == Coord::Invalid)
+			return false;
+		if (them == Coord::Invalid)
+			return false;
+		return true;
 	}
 
 	score_type Result (bool ourPerspective) const {

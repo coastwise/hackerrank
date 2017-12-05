@@ -6,7 +6,7 @@ const Coord TronState::NullAction {-1,-1};
 const Coord Coord::Invalid {-1,-1};
 const Coord Coord::Directions [4] { {-1,0}, {0,1}, {1,0}, {0,-1} };
 
-bool Coord::operator== (const Coord& that) {
+bool Coord::operator== (const Coord& that) const {
 	return this->X == that.X && this->Y == that.Y;
 }
 
@@ -47,14 +47,6 @@ std::istream& operator>> (std::istream& cin, TronState& state) {
 	if (cin.fail())
 	{
 		std::cerr << "input error." << std::endl;
-
-		// fake data to trigger game over
-		int fakesize = Coord::MaxX * Coord::MaxX;
-		state.us = Coord(1,1);
-		state.them = Coord(Coord::MaxX-2,Coord::MaxX-2);
-		state.empty.resize( fakesize, false );
-		state.ourTurn = true;
-
 		return cin;
 	}
 

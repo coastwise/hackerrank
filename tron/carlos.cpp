@@ -218,17 +218,15 @@ int main () {
 
 	Coord::MaxX = 15;
 
-	bool gameover = false;
-	while(!gameover)
+	while(true)
 	{
 		TronState game;
 		std::cin >> game;
 		std::cerr << game;
-		gameover = game.GameOver();
 
-		if (gameover)
+		if (!game.IsValid())
 		{
-			std::cerr << "gameover" << std::endl;
+			std::cerr << "invalid state" << std::endl;
 			break;
 		}
 
