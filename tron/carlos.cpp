@@ -206,7 +206,6 @@ TronState::action_type BasicPolicy (const TronState& currentState) {
 using namespace std::chrono;
 
 int main () {
-	auto t0 = high_resolution_clock::now();
 
 	Coord::MaxX = 15;
 
@@ -226,14 +225,19 @@ int main () {
 
 		auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
 
+		int updateCount = 0;
+		auto t0 = high_resolution_clock::now();
 		auto t1 = high_resolution_clock::now();
 		milliseconds elapsed = duration_cast<milliseconds>(t1-t0);
 		milliseconds timeLimit = milliseconds(800);
 		while (elapsed < timeLimit) {
+			updateCount++;
 			searchTree.Update();
 			t1 = high_resolution_clock::now();
 			elapsed = duration_cast<milliseconds>(t1-t0);
 		}
+
+		std::cerr << "updated " << updateCount << " times before timeout" << std::endl;
 
 		Coord curr = game.us;
 		Coord dest = searchTree.BestMove();
