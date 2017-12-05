@@ -26,6 +26,7 @@ std::ostream& operator<< (std::ostream& out, const Coord& coord) {
 
 std::vector<Coord> Neighbours(const Coord& c, const std::vector<bool>& empty) {
 	std::vector<Coord> neighbours;
+	neighbours.reserve(3);
 	for (int i = 0; i < 4; ++i) {
 		Coord neighbour = c + Coord::Directions[i];
 		if (empty[neighbour.Index()]) {
