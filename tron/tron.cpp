@@ -38,6 +38,20 @@ std::istream& operator>> (std::istream& cin, TronState& state) {
 	cin >> width >> height;
 	cin.ignore(256,'\n');
 
+	if (cin.fail())
+	{
+		std::cerr << "input error." << std::endl;
+
+		// fake data to trigger game over
+		int fakesize = Coord::MaxX * Coord::MaxX;
+		state.us = Coord(1,1);
+		state.them = Coord(Coord::MaxX-2,Coord::MaxX-2);
+		state.empty.resize( fakesize, false );
+		state.ourTurn = true;
+
+		return cin;
+	}
+
 	Coord::MaxX = width;
 
 	int size = width * height;
@@ -91,5 +105,7 @@ std::ostream& operator<< (std::ostream& cout, const TronState& state) {
 			cout << std::endl;
 		}
 	}
+	cout << "us: " << state.us << std::endl;
+	cout << "them: " << state.them << std::endl;
 	return cout;
 }

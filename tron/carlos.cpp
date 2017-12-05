@@ -218,6 +218,12 @@ int main () {
 		std::cerr << game;
 		gameover = game.GameOver();
 
+		if (gameover)
+		{
+			std::cerr << "gameover" << std::endl;
+			break;
+		}
+
 		auto searchTree = MCTS::Tree<TronState>(game, BasicPolicy);
 
 		auto t1 = high_resolution_clock::now();
@@ -239,6 +245,8 @@ int main () {
 
 		std::cout << std::endl;
 	}
+
+	std::cerr << "terminating" << std::endl;
 
 	return 0;
 }
