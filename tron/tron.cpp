@@ -14,6 +14,12 @@ Coord Coord::operator+ (Coord that) const {
 	return that += *this;
 }
 
+int ManhattanDistance(const Coord& a, const Coord& b)
+{
+	int result = abs(a.X - b.X) + abs(a.Y - b.Y);
+	return result;
+}
+
 std::ostream& operator<< (std::ostream& out, const Coord& coord) {
 	return out << "{" << coord.X << "," << coord.Y << "}";
 }
